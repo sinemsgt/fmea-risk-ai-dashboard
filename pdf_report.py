@@ -8,40 +8,55 @@ import os
 
 def temizle_metin(metin):
     metin = str(metin)
-    metin = metin.replace("🔴", "")
-    metin = metin.replace("🟠", "")
-    metin = metin.replace("🟡", "")
-    metin = metin.replace("🟢", "")
+
+    ceviri = {
+        "ç": "c",
+        "Ç": "C",
+        "ğ": "g",
+        "Ğ": "G",
+        "ı": "i",
+        "İ": "I",
+        "ö": "o",
+        "Ö": "O",
+        "ş": "s",
+        "Ş": "S",
+        "ü": "u",
+        "Ü": "U",
+        "🔴": "",
+        "🟠": "",
+        "🟡": "",
+        "🟢": ""
+    }
+
+    for eski, yeni in ceviri.items():
+        metin = metin.replace(eski, yeni)
+
     return metin.strip()
 
 
 def pdf_rapor_olustur(kayit):
     dosya_adi = "risk_analiz_raporu.pdf"
 
-    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    bold_font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
-    pdfmetrics.registerFont(TTFont("Arial", font_path))
-    pdfmetrics.registerFont(TTFont("Arial-Bold", bold_font_path))
 
     c = canvas.Canvas(dosya_adi, pagesize=A4)
     width, height = A4
 
     y = height - 60
 
-    c.setFont("Arial-Bold", 16)
+    c.setFont("Helvetica-Bold", 16)
     c.drawString(50, y, "AI Destekli FMEA Risk Analiz Raporu")
 
     y -= 30
-    c.setFont("Arial", 10)
+    c.setFont("Helvetica", 10)
     c.drawString(50, y, f"Rapor Tarihi: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
 
     y -= 40
-    c.setFont("Arial-Bold", 12)
+    c.setFont("Helvetica-Bold", 12)
     c.drawString(50, y, "Risk Analiz Bilgileri")
 
     y -= 25
-    c.setFont("Arial", 10)
+    c.setFont("Helvetica", 10)
 
     bilgiler = [
         ("Hata Kodu", kayit.get("hata_kodu", "")),
@@ -63,11 +78,11 @@ def pdf_rapor_olustur(kayit):
         y -= 20
 
     y -= 20
-    c.setFont("Arial-Bold", 12)
+    c.setFont("Helvetica-Bold", 12)
     c.drawString(50, y, "Önerilen Önlem")
 
     y -= 25
-    c.setFont("Arial", 10)
+    c.setFont("Helvetica", 10)
 
     onlem = temizle_metin(kayit.get("onlem", ""))
 
@@ -76,11 +91,11 @@ def pdf_rapor_olustur(kayit):
         y -= 18
 
     y -= 30
-    c.setFont("Arial-Bold", 11)
+    c.setFont("Helvetica-Bold", 11)
     c.drawString(50, y, "Sonuç")
 
     y -= 20
-    c.setFont("Arial", 10)
+    c.setFont("Helvetica", 10)
     c.drawString(
         60,
         y,
