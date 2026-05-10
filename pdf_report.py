@@ -3,6 +3,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import os
 
 
@@ -49,8 +50,8 @@ def pdf_rapor_olustur(kayit):
 
     y -= 30
     c.setFont("Helvetica", 10)
-    c.drawString(50, y, f"Rapor Tarihi: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
-
+    c.drawString(50, y, f"Rapor Tarihi: {datetime.now(ZoneInfo('Europe/Istanbul')).strftime('%d.%m.%Y %H:%M')}")
+    
     y -= 40
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, y, "Risk Analiz Bilgileri")
