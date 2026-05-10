@@ -18,8 +18,8 @@ def temizle_metin(metin):
 def pdf_rapor_olustur(kayit):
     dosya_adi = "risk_analiz_raporu.pdf"
 
-    font_path = "C:/Windows/Fonts/arial.ttf"
-    bold_font_path = "C:/Windows/Fonts/arialbd.ttf"
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    bold_font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
     pdfmetrics.registerFont(TTFont("Arial", font_path))
     pdfmetrics.registerFont(TTFont("Arial-Bold", bold_font_path))
