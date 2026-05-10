@@ -5,29 +5,17 @@ from reportlab.pdfbase import pdfmetrics
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import os
-
+import matplotlib.font_manager as fm
 
 def temizle_metin(metin):
     metin = str(metin)
 
-    ceviri = {
-        "ç": "c",
-        "Ç": "C",
-        "ğ": "g",
-        "Ğ": "G",
-        "ı": "i",
-        "İ": "I",
-        "ö": "o",
-        "Ö": "O",
-        "ş": "s",
-        "Ş": "S",
-        "ü": "u",
-        "Ü": "U",
-        "🔴": "",
-        "🟠": "",
-        "🟡": "",
-        "🟢": ""
-    }
+    metin = metin.replace("🔴", "")
+    metin = metin.replace("🟠", "")
+    metin = metin.replace("🟡", "")
+    metin = metin.replace("🟢", "")
+
+    return metin.strip()
 
     for eski, yeni in ceviri.items():
         metin = metin.replace(eski, yeni)
@@ -38,6 +26,12 @@ def temizle_metin(metin):
 def pdf_rapor_olustur(kayit):
     dosya_adi = "risk_analiz_raporu.pdf"
 
+    font_path = fm.findfont("DejaVu Sans")
+    bold_font_path = fm.findfont("DejaVu Sans:bold")
+
+    pdfmetrics.registerFont(TTFont("DejaVu", font_path))
+    pdfmetrics.registerFont(TTFont("DejaVu-Bold", bold_font_path))
+
 
 
     c = canvas.Canvas(dosya_adi, pagesize=A4)
@@ -45,19 +39,19 @@ def pdf_rapor_olustur(kayit):
 
     y = height - 60
 
-    c.setFont("Helvetica-Bold", 16)
+    c.setFont("DejaVu-Bold", 16)
     c.drawString(50, y, "AI Destekli FMEA Risk Analiz Raporu")
 
     y -= 30
-    c.setFont("Helvetica", 10)
+    c.setFont("DejaVu", 10)
     c.drawString(50, y, f"Rapor Tarihi: {datetime.now(ZoneInfo('Europe/Istanbul')).strftime('%d.%m.%Y %H:%M')}")
-    
+
     y -= 40
-    c.setFont("Helvetica-Bold", 12)
+    c.setFont("DejaVu-Bold", 12)
     c.drawString(50, y, "Risk Analiz Bilgileri")
 
     y -= 25
-    c.setFont("Helvetica", 10)
+    c.setFont("DejaVu", 10)
 
     bilgiler = [
         ("Hata Kodu", kayit.get("hata_kodu", "")),
@@ -79,11 +73,11 @@ def pdf_rapor_olustur(kayit):
         y -= 20
 
     y -= 20
-    c.setFont("Helvetica-Bold", 12)
+    c.setFont("DejaVu-Bold", 12)
     c.drawString(50, y, "Önerilen Önlem")
 
     y -= 25
-    c.setFont("Helvetica", 10)
+    c.setFont("DejaVu", 10)
 
     onlem = temizle_metin(kayit.get("onlem", ""))
 
@@ -92,11 +86,11 @@ def pdf_rapor_olustur(kayit):
         y -= 18
 
     y -= 30
-    c.setFont("Helvetica-Bold", 11)
+    c.setFont("DejaVu-Bold", 11)
     c.drawString(50, y, "Sonuç")
 
     y -= 20
-    c.setFont("Helvetica", 10)
+    c.setFont("DejaVu", 10)
     c.drawString(
         60,
         y,
