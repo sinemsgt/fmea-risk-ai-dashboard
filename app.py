@@ -898,15 +898,20 @@ elif sayfa == "🔮 Canlı RPN Tahmini":
                 "onlem": ht["onlem"]
             }
 
-            pdf_dosya = pdf_rapor_olustur(kayit)
+            try:
+                pdf_dosya = pdf_rapor_olustur(kayit)
 
-            with open(pdf_dosya, "rb") as file:
-                st.download_button(
-                    label="📄 PDF Risk Raporunu İndir",
-                    data=file,
-                    file_name="AI_FMEA_Risk_Raporu.pdf",
-                    mime="application/pdf"
-                )
+                with open(pdf_dosya, "rb") as file:
+                    st.download_button(
+                        label="📄 PDF Risk Raporunu İndir",
+                        data=file,
+                        file_name="AI_FMEA_Risk_Raporu.pdf",
+                        mime="application/pdf"
+                    )
+
+            except Exception as e:
+                st.warning("Kayıt başarıyla alındı ancak PDF oluşturulurken hata oluştu.")
+                st.error(str(e))
 
         st.markdown(f"""
         <div class='info-box' style='margin-top:14px;'>
