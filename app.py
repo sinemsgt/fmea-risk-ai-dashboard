@@ -315,7 +315,8 @@ with st.sidebar:
          "🌲 Random Forest",
          "🔍 Pattern Recognition",
          "🔮 Canlı RPN Tahmini",
-         "🗂 Kayıtlı Analizler"],
+         "🗂 Kayıtlı Analizler",
+         "📤 Firma Verisi Yükle"],
         label_visibility="collapsed"
     )
 
@@ -964,3 +965,69 @@ elif sayfa == "🗂 Kayıtlı Analizler":
     else:
         st.dataframe(kayitlar, use_container_width=True, hide_index=True)
 
+elif sayfa == "📤 Firma Verisi Yükle":
+
+    st.markdown("<div class='section-header'>▸ FİRMA VERİSİ YÜKLEME PANELİ</div>", unsafe_allow_html=True)
+
+    st.info("Firma verisini Excel veya CSV formatında yükleyebilirsiniz.")
+
+    uploaded_file = st.file_uploader(
+        "Excel veya CSV dosyası yükleyin",
+        type=["xlsx", "csv"]
+    )
+
+    if uploaded_file is not None:
+
+        if uploaded_file.name.endswith(".csv"):
+            firma_df = pd.read_csv(uploaded_file)
+        else:
+            firma_df = pd.read_excel(uploaded_file)
+
+        zorunlu_sutunlar = [
+            "Hata_Kodu",
+            "Hata_Turu",
+            "Proses_Adimi",
+            "Etki",
+            "Hata_Aciklamasi",
+            "O",
+            "S",
+            "D",
+            "Istasyon",
+            "Operator_ID",
+            "Vardiya",
+            "Ay",
+            "Hafta"
+        ]
+
+        eksik_sutunlar = [s for s in zorunlu_sutunlar if s not in firma_df.columns]
+
+        if eksik_sutunlar:
+            st.error("Yüklenen dosyada eksik sütunlar var:")
+            st.write(eksik_sutunlar)
+
+        else:
+            firma_df["RPN"] = firma_df["O"] * firma_df["S"] * firma_df["D"]
+            firma_df["Agirlikli_RPN"] = (
+                0.5 * firma_df["S"] +
+                0.3 * firma_df["O"] +
+                0.2 * firma_df["D"]
+            )
+
+            firma_df["Risk_Seviyesi"] = pd.cut(
+                firma_df["RPN"],
+                bins=[0, 100, 200, 500, 1000],
+                labels=["Düşük", "Orta", "Yüksek", "Kritik"]
+            )
+
+            st.success("Firma verisi başarıyla yüklendi ve analiz edildi.")
+
+            st.dataframe(firma_df, use_container_width=True, hide_index=True)
+
+            csv = firma_df.to_csv(index=False).encode("utf-8-sig")
+
+            st.download_button(
+                "⬇ Analiz Edilmiş Firma Verisini İndir",
+                data=csv,
+                file_name="firma_fmea_analizli_veri.csv",
+                mime="text/csv"
+            )
