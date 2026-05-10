@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import seaborn as sns
 from io import BytesIO
+import json
 
 import streamlit as st
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -316,7 +317,8 @@ with st.sidebar:
          "🔍 Pattern Recognition",
          "🔮 Canlı RPN Tahmini",
          "🗂 Kayıtlı Analizler",
-         "📤 Firma Verisi Yükle"],
+         "📤 Firma Verisi Yükle",
+         "⚙️ Vardiya Ayarları"],
         label_visibility="collapsed"
     )
 
@@ -337,6 +339,9 @@ with st.sidebar:
     </div>""", unsafe_allow_html=True)
 
 # ─── VERİ YÜKLEME ─────────────────────────────────────────────────────────────
+with open("vardiyalar.json", "r", encoding="utf-8") as f:
+    vardiya_listesi = json.load(f)
+
 df = veri_seti_olustur(n=n_kayit, seed=int(seed))
 fmea_ozet = fmea_analizi(df)
 
@@ -490,7 +495,7 @@ elif sayfa == "📋 FMEA Analizi":
         use_container_width=True, height=380, hide_index=True
     )
 
-    st.markdown("<div class='section-header'>▸ GELENEKSELvs. AĞIRLIKLI RPN KARŞILAŞTIRMASI</div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-header'>▸ GELENEKSEL VE AĞIRLIKLI RPN KARŞILAŞTIRMASI</div>", unsafe_allow_html=True)
     st.markdown("""<div class='info-box'>
     Geleneksel RPN = O × S × D  |  
     Ağırlıklı RPN = 0.5×S + 0.3×O + 0.2×D 
@@ -809,7 +814,15 @@ elif sayfa == "🔮 Canlı RPN Tahmini":
         D_val = st.slider("Tespit Edilebilirlik (D)", 1, 10, 4)
         hata_kodu = st.selectbox("Hata Kodu", list(HATA_TURLERI.keys()),
                                   format_func=lambda k: f"{k} — {HATA_TURLERI[k]['isim']}")
-        vardiya = st.selectbox("Vardiya", VARDIYALAR)
+        vardiya_secenekleri = [
+            f"{v['isim']} ({v['baslangic']} - {v['bitis']})"
+            for v in vardiya_listesi
+        ]
+
+        vardiya = st.selectbox(
+            "Vardiya",
+            vardiya_secenekleri
+        )
         istasyon = st.selectbox("İstasyon", ISTASYON_LISTESI)
         ay = st.slider("Ay", 1, 10, 5)
         hafta = st.slider("Hafta", 1, 40, 20)
@@ -1031,3 +1044,57 @@ elif sayfa == "📤 Firma Verisi Yükle":
                 file_name="firma_fmea_analizli_veri.csv",
                 mime="text/csv"
             )
+
+elif sayfa == "⚙️ Vardiya Ayarları":
+
+    st.markdown("<div class='section-header'>▸ VARDİYA AYARLARI</div>", unsafe_allow_html=True)
+
+    st.info("Bu ekrandan vardiya adlarını ve saatlerini düzenleyebilirsiniz.")
+
+    st.subheader("Mevcut Vardiyalar")
+
+    vardiya_df = pd.DataFrame(vardiya_listesi)
+    st.dataframe(vardiya_df, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+    st.subheader("Yeni Vardiya Ekle")
+
+    yeni_isim = st.text_input("Vardiya Adı", placeholder="Örn: Sabah")
+    yeni_baslangic = st.time_input("Başlangıç Saati")
+    yeni_bitis = st.time_input("Bitiş Saati")
+
+    if st.button("➕ Vardiya Ekle"):
+        if yeni_isim.strip() == "":
+            st.error("Vardiya adı boş olamaz.")
+        else:
+            yeni_vardiya = {
+                "isim": yeni_isim,
+                "baslangic": yeni_baslangic.strftime("%H:%M"),
+                "bitis": yeni_bitis.strftime("%H:%M")
+            }
+
+            vardiya_listesi.append(yeni_vardiya)
+
+            with open("vardiyalar.json", "w", encoding="utf-8") as f:
+                json.dump(vardiya_listesi, f, ensure_ascii=False, indent=4)
+
+            st.success("Yeni vardiya eklendi. Sayfayı yenileyin.")
+
+    st.markdown("---")
+    st.subheader("Vardiya Sil")
+
+    silinecek_vardiya = st.selectbox(
+        "Silinecek vardiyayı seçin",
+        [f"{v['isim']} ({v['baslangic']} - {v['bitis']})" for v in vardiya_listesi]
+    )
+
+    if st.button("🗑 Seçili Vardiyayı Sil"):
+        vardiya_listesi = [
+            v for v in vardiya_listesi
+            if f"{v['isim']} ({v['baslangic']} - {v['bitis']})" != silinecek_vardiya
+        ]
+
+        with open("vardiyalar.json", "w", encoding="utf-8") as f:
+            json.dump(vardiya_listesi, f, ensure_ascii=False, indent=4)
+
+        st.success("Vardiya silindi. Sayfayı yenileyin.")

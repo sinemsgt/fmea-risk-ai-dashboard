@@ -1,0 +1,19 @@
+[
+    {
+        "isim": "Sabah",
+        "baslangic": "06:00",
+        "bitis": "14:00"
+    },
+
+    {
+        "isim": "Akşam",
+        "baslangic": "14:00",
+        "bitis": "22:00"
+    },
+
+    {
+        "isim": "Gece",
+        "baslangic": "22:00",
+        "bitis": "06:00"
+    }
+]
