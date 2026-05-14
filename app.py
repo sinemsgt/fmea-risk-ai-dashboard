@@ -824,8 +824,12 @@ elif sayfa == "🔮 Canlı RPN Tahmini":
             vardiya_secenekleri
         )
         istasyon = st.selectbox("İstasyon", ISTASYON_LISTESI)
-        ay = st.slider("Ay", 1, 10, 5)
-        hafta = st.slider("Hafta", 1, 40, 20)
+        hafta = st.slider("Haftalık Hata Sayısı", 1, 10, 5)
+        ay = st.slider("Aylık Hata Sayısı", 1, 40, 20)
+
+        if ay < hafta:
+            st.error("Aylık hata sayısı haftalık hata sayısından küçük olamaz. Lütfen değerleri kontrol edin.")
+            st.stop()
 
     with col2:
         # Tahmin
