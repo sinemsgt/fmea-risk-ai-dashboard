@@ -1,19 +1,17 @@
 [
     {
         "isim": "Sabah",
-        "baslangic": "06:00",
-        "bitis": "14:00"
+        "baslangic": "08:00",
+        "bitis": "17:00"
     },
-
     {
         "isim": "Akşam",
-        "baslangic": "14:00",
-        "bitis": "22:00"
+        "baslangic": "17:00",
+        "bitis": "00:00"
     },
-
     {
         "isim": "Gece",
-        "baslangic": "22:00",
-        "bitis": "06:00"
+        "baslangic": "00:00",
+        "bitis": "08:00"
     }
 ]

@@ -830,7 +830,10 @@ elif sayfa == "🔮 Canlı RPN Tahmini":
     with col2:
         # Tahmin
         hk_enc = rf_enc["Hata_Kodu"].transform([hata_kodu])[0]
-        v_enc  = rf_enc["Vardiya"].transform([vardiya])[0]
+        try:
+            v_enc = rf_enc["Vardiya"].transform([vardiya])[0]
+        except ValueError:
+            v_enc = 0
         i_enc  = rf_enc["Istasyon"].transform([istasyon])[0]
         X_input = pd.DataFrame([[O_val, S_val, D_val, hk_enc, v_enc, i_enc, ay, hafta]],
                                 columns=["O", "S", "D", "Hata_Kodu_enc",
